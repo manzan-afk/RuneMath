@@ -1,0 +1,26 @@
+{
+  "name": "rune-math",
+  "version": "1.0.0",
+  "description": "A warrior-vs-monsters math game. Answer faster to deal more damage.",
+  "main": "main.js",
+  "author": "Rune Math",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0",
+    "vite": "^6.0.0"
+  },
+  "build": {
+    "appId": "com.runemath.game",
+    "productName": "Rune Math",
+    "files": ["index.html", "style.css", "game.js", "main.js"],
+    "win": { "target": "nsis" },
+    "mac": { "target": "dmg", "category": "public.app-category.education-games" },
+    "linux": { "target": "AppImage", "category": "Game" }
+  }
+}
