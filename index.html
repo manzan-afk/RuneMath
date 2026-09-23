@@ -7,6 +7,13 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <audio id="backgroundMusic" loop preload="metadata">
+    <source src="background-music.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="bossMusic" loop preload="metadata">
+    <source src="boss-music.mp3" type="audio/mpeg">
+  </audio>
+
   <main class="game">
     <section class="view" id="view" aria-label="First-person battle view">
       <canvas id="scene" aria-hidden="true"></canvas>
@@ -27,6 +34,10 @@
           <div class="hud-controls" aria-label="Game controls">
             <button class="btn compact" id="homeBtn" type="button">Home</button>
             <button class="btn compact" id="pauseBtn" type="button">Pause</button>
+            <label class="volume-control" title="Music volume">
+              <span aria-hidden="true">🔊</span>
+              <input id="volume" type="range" min="0" max="1" step="0.05" value="0.5" aria-label="Music volume">
+            </label>
           </div>
           <dl class="stats">
             <div><dt>Level</dt><dd id="level">1</dd></div>
@@ -37,7 +48,7 @@
         </header>
         <div class="bars">
           <div class="hero-bar">
-            <p class="name">You <span id="heroHpText">100/100</span></p>
+            <p class="name">You <span id="heroHpText">100/100</span> <span class="shield-status" id="shieldStatus" hidden>Shield ready</span></p>
             <div class="bar" aria-hidden="true"><div class="fill hp-hero" id="heroHp"></div></div>
           </div>
           <div class="foe-bar">
@@ -94,7 +105,10 @@
     <div class="panel">
       <h2 id="overTitle">You have fallen</h2>
       <dl class="result" id="overStats"></dl>
-      <button class="btn big" id="againBtn">Fight again</button>
+      <div class="panel-actions">
+        <button class="btn big" id="againBtn">Fight again</button>
+        <button class="btn secondary" id="overHomeBtn" type="button">Home</button>
+      </div>
     </div>
   </div>
 

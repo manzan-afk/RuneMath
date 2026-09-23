@@ -65,6 +65,12 @@ body {
 }
 .flash.go { animation: flashAnim 0.5s ease-out; }
 @keyframes flashAnim { from { opacity: 1; } to { opacity: 0; } }
+.flash.burst { animation: runeBurst 0.65s ease-out; }
+@keyframes runeBurst {
+  0% { opacity: 0; background: radial-gradient(circle, #fff7c2, rgba(240, 185, 90, 0.9) 45%, transparent 75%); }
+  25% { opacity: 1; }
+  100% { opacity: 0; }
+}
 
 /* ---------- HUD ---------- */
 .top {
@@ -80,6 +86,8 @@ body {
 }
 .hud { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
 .hud-controls { display: flex; gap: 8px; margin-left: auto; pointer-events: auto; }
+.volume-control { display: flex; align-items: center; gap: 5px; padding: 0 3px; color: var(--ink); cursor: pointer; }
+.volume-control input { width: 76px; margin: 0; accent-color: var(--rune); cursor: pointer; }
 .logo {
   margin: 0;
   font-size: clamp(1.4rem, 3vw, 2rem);
@@ -96,6 +104,7 @@ body {
 .hero-bar, .foe-bar { flex: 1; max-width: 320px; }
 .foe-bar { text-align: right; }
 .name { margin: 0 0 4px; font-size: 0.95rem; color: var(--ink); font-variant-numeric: tabular-nums; }
+.shield-status { display: inline-block; padding: 1px 5px; color: #fff7c2; background: rgba(240, 185, 90, 0.25); border: 1px solid var(--rune); border-radius: 4px; font-size: 0.72em; }
 .bar {
   height: 12px;
   border-radius: 6px;
@@ -196,6 +205,7 @@ body {
   pointer-events: none;
   filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.6));
 }
+.shield.ready { filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 16px rgba(240, 185, 90, 0.9)); }
 .shield.block { animation: block 0.45s ease-out; }
 @keyframes block { 40% { transform: translateY(-28px) scale(1.14) rotate(0deg); } }
 
@@ -284,6 +294,8 @@ body {
 .popup.hero { top: 52%; }
 .popup.good { color: var(--rune); }
 .popup.bad { color: var(--danger); }
+.popup.shield { color: #fff7c2; font-size: 1.45rem; letter-spacing: 0.08em; text-shadow: 0 0 12px var(--rune), 0 2px 6px #000; }
+.popup.special { top: 16%; color: #fff7c2; font-size: 1.45rem; letter-spacing: 0.08em; text-shadow: 0 0 12px var(--rune), 0 2px 6px #000; }
 @keyframes floatUp {
   from { opacity: 1; transform: translate(-50%, 0); }
   to { opacity: 0; transform: translate(-50%, -70px); }
@@ -338,10 +350,34 @@ body {
 .result dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
 
 @media (max-width: 640px) {
-  .stats { gap: 12px; }
-  .sword { right: -2%; }
-  .shield { left: -3%; }
-  .rune-stone { padding: 14px 14px 8px; }
+  .game { padding: 0; }
+  .view { height: 100dvh; min-height: 0; border-right: 0; border-left: 0; border-radius: 0; }
+  .top { gap: 8px; padding: 10px 12px; }
+  .hud { gap: 8px; }
+  .logo { font-size: 1.35rem; }
+  .hud-controls { gap: 4px; }
+  .btn.compact { padding: 6px 8px; font-size: 0.82rem; }
+  .volume-control input { width: 56px; }
+  .stats { order: 3; width: 100%; justify-content: space-between; gap: 0; }
+  .stats div { flex: 1; text-align: center; }
+  .stats dt { font-size: 0.7rem; }
+  .stats dd { font-size: 1rem; }
+  .bars { gap: 10px; }
+  .hero-bar, .foe-bar { max-width: none; }
+  .name { font-size: 0.82rem; }
+  .bar { height: 9px; }
+  .sword { right: -7%; height: 42%; }
+  .shield { left: -8%; bottom: -5%; font-size: 7rem; }
+  .rune-stone { bottom: 0; width: 100%; padding: 12px 12px 7px; border-radius: 42px 42px 0 0 / 34px 34px 0 0; }
+  .timer { margin-bottom: 7px; }
+  .question { margin-bottom: 7px; font-size: 1.65rem; }
+  #answer { font-size: 1.25rem; }
+  .feedback { min-height: 2em; margin-top: 7px; font-size: 0.85rem; }
+  .overlay { padding: 12px; }
+  .panel { padding: 20px; }
+  .panel h2 { font-size: 1.65rem; }
+  .ops { gap: 6px; margin: 14px 0 6px; }
+  .rune-toggle span { width: 50px; height: 50px; font-size: 1.7rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

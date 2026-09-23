@@ -18,7 +18,7 @@
   "build": {
     "appId": "com.runemath.game",
     "productName": "Rune Math",
-    "files": ["index.html", "style.css", "game.js", "main.js"],
+    "files": ["index.html", "style.css", "game.js", "main.js", "background-music.mp3", "boss-music.mp3"],
     "win": { "target": "nsis" },
     "mac": { "target": "dmg", "category": "public.app-category.education-games" },
     "linux": { "target": "AppImage", "category": "Game" }

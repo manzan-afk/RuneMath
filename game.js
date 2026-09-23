@@ -7,13 +7,16 @@
     danger: $('danger'), flash: $('flash'), sword: $('sword'), shield: $('shield'),
     level: $('level'), score: $('score'), best: $('best'), streak: $('streak'),
     heroHp: $('heroHp'), heroHpText: $('heroHpText'),
+    shieldStatus: $('shieldStatus'),
     foeSprite: $('foeSprite'), foeHp: $('foeHp'), foeHpText: $('foeHpText'), foeName: $('foeName'),
     timerFill: $('timerFill'), question: $('question'), form: $('answerForm'),
     answer: $('answer'), feedback: $('feedback'),
+    backgroundMusic: $('backgroundMusic'), bossMusic: $('bossMusic'),
+    volume: $('volume'),
     pauseBtn: $('pauseBtn'), homeBtn: $('homeBtn'), pauseOverlay: $('pauseOverlay'),
     resumeBtn: $('resumeBtn'), pauseHomeBtn: $('pauseHomeBtn'),
     startOverlay: $('startOverlay'), startBtn: $('startBtn'),
-    overOverlay: $('overOverlay'), overTitle: $('overTitle'), overStats: $('overStats'), againBtn: $('againBtn'),
+    overOverlay: $('overOverlay'), overTitle: $('overTitle'), overStats: $('overStats'), againBtn: $('againBtn'), overHomeBtn: $('overHomeBtn'),
   };
   const ctx = el.scene.getContext('2d');
 
@@ -30,6 +33,10 @@
   ];
   const HERO_MAX_HP = 100;
   const BEST_KEY = 'runeMath.best';
+  const VOLUME_KEY = 'runeMath.volume';
+  const SPECIAL_ATTACK_TIME = 3;
+  const SPECIAL_ATTACK_MULTIPLIER = 2;
+  const SHIELD_STREAK = 3;
 
   let state = null;
   let best = loadBest();
@@ -50,6 +57,12 @@
   }
   function saveBest(v) {
     try { localStorage.setItem(BEST_KEY, String(v)); } catch (e) { /* storage unavailable */ }
+  }
+  function loadVolume() {
+    try {
+      const volume = Number(localStorage.getItem(VOLUME_KEY));
+      return Number.isFinite(volume) && volume >= 0 && volume <= 1 ? volume : 0.5;
+    } catch (e) { return 0.5; }
   }
 
   /* ------------------------------------------------------------------ */
@@ -113,6 +126,28 @@
     setTimeout(() => { walking = false; }, ms);
   }
 
+  function setBattleMusic(isBoss) {
+    const active = isBoss ? el.bossMusic : el.backgroundMusic;
+    const inactive = isBoss ? el.backgroundMusic : el.bossMusic;
+    inactive.pause();
+    inactive.currentTime = 0;
+    if (!active.paused) return;
+    active.play().catch(() => {});
+  }
+
+  function pauseBattleMusic() {
+    el.backgroundMusic.pause();
+    el.bossMusic.pause();
+  }
+
+  function setMusicVolume(value) {
+    const volume = Math.min(1, Math.max(0, Number(value)));
+    el.backgroundMusic.volume = volume;
+    el.bossMusic.volume = volume;
+    el.volume.value = String(volume);
+    try { localStorage.setItem(VOLUME_KEY, String(volume)); } catch (e) { /* storage unavailable */ }
+  }
+
   function render() {
     el.level.textContent = state.level;
     el.score.textContent = state.score;
@@ -120,6 +155,8 @@
     el.streak.textContent = state.streak;
     el.heroHp.style.width = (state.hp / state.maxHp * 100) + '%';
     el.heroHpText.textContent = `${state.hp}/${state.maxHp}`;
+    el.shieldStatus.hidden = !state.shieldReady;
+    el.shield.classList.toggle('ready', state.shieldReady);
     el.foeHp.style.width = (state.monsterHp / state.monsterMax * 100) + '%';
     el.foeHpText.textContent = `${state.monsterHp}/${state.monsterMax}`;
   }
@@ -141,6 +178,7 @@
     el.foeSprite.textContent = m.icon;
     el.foeSprite.setAttribute('aria-label', m.name);
     el.foeSprite.classList.remove('fallen');
+    setBattleMusic(boss);
     state.monster = m;
     approach = 0;
     approachTarget = 0;
@@ -172,17 +210,25 @@
     const frac = left / state.timeLimit;
     state.streak += 1;
     state.bestStreak = Math.max(state.bestStreak, state.streak);
+    const shieldGained = !state.shieldReady && state.streak % SHIELD_STREAK === 0;
+    if (shieldGained) state.shieldReady = true;
     const combo = 1 + Math.min(state.streak - 1, 10) * 0.05;
-    const dmg = Math.round((10 + 50 * frac) * combo);
+    const specialAttack = elapsed <= SPECIAL_ATTACK_TIME;
+    const dmg = Math.round((10 + 50 * frac) * combo * (specialAttack ? SPECIAL_ATTACK_MULTIPLIER : 1));
     state.correct += 1;
     state.timeSum += elapsed;
     state.score += dmg;
     state.monsterHp = Math.max(0, state.monsterHp - dmg);
 
-    const tag = frac > 0.8 ? 'Lightning strike!' : frac > 0.5 ? 'Swift strike!' : 'Strike!';
+    const tag = specialAttack ? 'Rune Burst!' : frac > 0.8 ? 'Lightning strike!' : frac > 0.5 ? 'Swift strike!' : 'Strike!';
     say(`${tag} ${dmg} damage`, 'good');
     play(el.sword, 'swing', 500);
     play(el.slash, 'go', 400);
+    if (specialAttack) {
+      play(el.flash, 'burst', 650);
+      popup('RUNE BURST!', 'special', 'foe');
+    }
+    if (shieldGained) popup('SHIELD READY!', 'shield', 'hero');
     later(() => play(el.foeSprite, 'hurt'), 200);
     popup(`-${dmg}`, 'good', 'foe');
 
@@ -220,20 +266,26 @@
     state.streak = 0;
     state.wrong += 1;
     const dmg = Math.round((12 + state.level * 2) * (state.boss ? 1.5 : 1));
-    state.hp = Math.max(0, state.hp - dmg);
+    const shieldBlocked = state.shieldReady;
+    if (shieldBlocked) state.shieldReady = false;
+    else state.hp = Math.max(0, state.hp - dmg);
 
-    say(timedOut
-      ? `Too slow! ${state.q.text} = ${state.q.answer}.`
-      : `Not quite: ${state.q.text} = ${state.q.answer}.`, 'bad');
+    say(shieldBlocked
+      ? 'Shield shattered! Attack blocked.'
+      : timedOut
+        ? `Too slow! ${state.q.text} = ${state.q.answer}.`
+        : `Not quite: ${state.q.text} = ${state.q.answer}.`, shieldBlocked ? 'good' : 'bad');
     approach = 1.25;
     approachTarget = 1.25;
     play(el.foeSprite, 'lunge');
     later(() => {
       play(el.shield, 'block');
-      play(el.view, 'shake', 400);
-      play(el.flash, 'go', 500);
+      if (!shieldBlocked) {
+        play(el.view, 'shake', 400);
+        play(el.flash, 'go', 500);
+      }
     }, 180);
-    popup(`-${dmg}`, 'bad', 'hero');
+    popup(shieldBlocked ? 'BLOCKED!' : `-${dmg}`, shieldBlocked ? 'shield' : 'bad', 'hero');
     render();
 
     if (state.hp === 0) {
@@ -256,6 +308,7 @@
 
   function gameOver() {
     state.running = false;
+    pauseBattleMusic();
     el.pauseBtn.hidden = true;
     const isBest = state.score > best;
     if (isBest) { best = state.score; saveBest(best); }
@@ -280,6 +333,7 @@
     if (!state || !state.running || state.paused) return;
     state.paused = true;
     state.pausedAt = performance.now();
+    pauseBattleMusic();
     el.pauseOverlay.hidden = false;
     el.resumeBtn.focus();
   }
@@ -289,12 +343,14 @@
     const pausedFor = performance.now() - state.pausedAt;
     state.qStart += pausedFor;
     state.paused = false;
+    setBattleMusic(state.boss);
     el.pauseOverlay.hidden = true;
     el.answer.focus();
   }
 
   function goHome() {
     if (state) state.running = false;
+    pauseBattleMusic();
     state = null;
     walking = false;
     speed = 0;
@@ -317,7 +373,7 @@
     if (!ops.length) return;
     state = {
       ops, level: 1, score: 0, hp: HERO_MAX_HP, maxHp: HERO_MAX_HP,
-      streak: 0, bestStreak: 0, slain: 0, correct: 0, wrong: 0, timeSum: 0,
+      streak: 0, bestStreak: 0, shieldReady: false, slain: 0, correct: 0, wrong: 0, timeSum: 0,
       monster: null, monsterHp: 0, monsterMax: 1, boss: false,
       timeLimit: 12, q: null, qStart: 0, locked: true, running: true,
       paused: false, pausedAt: 0,
@@ -458,7 +514,7 @@
 
   function updateMonster() {
     approach = Math.min(1.3, Math.max(0, approach));
-    const s = 0.55 + 0.9 * approach;
+    const s = (0.55 + 0.9 * approach) * (state?.boss ? 1.3 : 1);
     const feetY = H * 0.46 + H * (0.10 + 0.20 * approach);
     el.monster.style.bottom = (H - feetY) + 'px';
     el.monster.style.transform = `translateX(-50%) scale(${s})`;
@@ -507,11 +563,13 @@
   el.homeBtn.addEventListener('click', goHome);
   el.resumeBtn.addEventListener('click', resumeGame);
   el.pauseHomeBtn.addEventListener('click', goHome);
+  el.overHomeBtn.addEventListener('click', goHome);
   el.againBtn.addEventListener('click', () => {
     el.overOverlay.hidden = true;
     el.startOverlay.hidden = false;
     el.startBtn.focus();
   });
+  el.volume.addEventListener('input', (e) => setMusicVolume(e.target.value));
   document.querySelectorAll('.ops input').forEach((i) => i.addEventListener('change', updateStartButton));
   document.addEventListener('keydown', (e) => {
     if (state && state.running && /^\d$/.test(e.key) && document.activeElement !== el.answer) el.answer.focus();
@@ -521,6 +579,7 @@
   el.best.textContent = best;
   el.pauseBtn.hidden = true;
   el.homeBtn.hidden = true;
+  setMusicVolume(loadVolume());
   resize();
   el.startBtn.focus();
   requestAnimationFrame(frame);
