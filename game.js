@@ -429,39 +429,73 @@
       ctx.stroke();
     };
 
-    ctx.fillStyle = '#0d0e1f';
+    ctx.fillStyle = '#120b14';
     ctx.fillRect(0, 0, W, H);
 
     // floor
     const fg = ctx.createLinearGradient(0, cy, 0, H);
-    fg.addColorStop(0, '#15173a'); fg.addColorStop(1, '#40467a');
+    fg.addColorStop(0, '#281322'); fg.addColorStop(1, '#6d3c35');
     quad([P(-1, floorY, zn), P(1, floorY, zn), P(1, floorY, zf), P(-1, floorY, zf)], fg);
     // ceiling
     const cg = ctx.createLinearGradient(0, cy, 0, 0);
-    cg.addColorStop(0, '#0f1027'); cg.addColorStop(1, '#262a58');
+    cg.addColorStop(0, '#170c18'); cg.addColorStop(1, '#422032');
     quad([P(-1, ceilY, zn), P(1, ceilY, zn), P(1, ceilY, zf), P(-1, ceilY, zf)], cg);
     // walls
     const lg = ctx.createLinearGradient(0, 0, cx, 0);
-    lg.addColorStop(0, '#3a3f78'); lg.addColorStop(1, '#191b3c');
+    lg.addColorStop(0, '#7b3934'); lg.addColorStop(1, '#271321');
     quad([P(-1, ceilY, zn), P(-1, floorY, zn), P(-1, floorY, zf), P(-1, ceilY, zf)], lg);
     const rg = ctx.createLinearGradient(W, 0, cx, 0);
-    rg.addColorStop(0, '#3a3f78'); rg.addColorStop(1, '#191b3c');
+    rg.addColorStop(0, '#7b3934'); rg.addColorStop(1, '#271321');
     quad([P(1, ceilY, zn), P(1, floorY, zn), P(1, floorY, zf), P(1, ceilY, zf)], rg);
     // far wall
-    quad([P(-1, ceilY, zf), P(1, ceilY, zf), P(1, floorY, zf), P(-1, floorY, zf)], '#07081a');
+    quad([P(-1, ceilY, zf), P(1, ceilY, zf), P(1, floorY, zf), P(-1, floorY, zf)], '#160b13');
 
-    // lines running down the corridor
-    [-1, -0.35, 0.3, 0.85].forEach((Y) => {
-      line(P(-1, Y, zn), P(-1, Y, zf), 'rgba(120,130,220,0.18)', 1);
-      line(P(1, Y, zn), P(1, Y, zf), 'rgba(120,130,220,0.18)', 1);
-    });
+    // Staggered stone blocks catch the torchlight on both corridor walls.
+    const drawBrickWall = (side) => {
+      const rows = 6;
+      const depth = 1.8;
+      for (let row = 0; row < rows; row += 1) {
+        const y0 = floorY + (ceilY - floorY) * row / rows;
+        const y1 = floorY + (ceilY - floorY) * (row + 1) / rows;
+        const shift = row % 2 ? depth / 2 : 0;
+        for (let z0 = zn - shift; z0 < zf; z0 += depth) {
+          const near = Math.max(zn, z0);
+          const far = Math.min(zf, z0 + depth);
+          if (near >= far) continue;
+          quad([P(side, y0, near), P(side, y1, near), P(side, y1, far), P(side, y0, far)],
+            row % 2 ? 'rgba(112,48,47,0.16)' : 'rgba(227,120,77,0.1)');
+          line(P(side, y0, near), P(side, y1, near), 'rgba(30,12,19,0.72)', Math.max(1, 3 / near));
+          line(P(side, y0, near), P(side, y0, far), 'rgba(245,151,92,0.2)', Math.max(1, 2 / near));
+        }
+      }
+    };
+    drawBrickWall(-1);
+    drawBrickWall(1);
+
     [-0.5, 0, 0.5].forEach((X) => {
-      line(P(X, floorY, zn), P(X, floorY, zf), 'rgba(120,130,220,0.16)', 1);
-      line(P(X, ceilY, zn), P(X, ceilY, zf), 'rgba(120,130,220,0.1)', 1);
+      line(P(X, floorY, zn), P(X, floorY, zf), 'rgba(241,157,92,0.2)', 1);
+      line(P(X, ceilY, zn), P(X, ceilY, zf), 'rgba(112,47,53,0.2)', 1);
     });
     [[-1, floorY], [1, floorY], [-1, ceilY], [1, ceilY]].forEach(([X, Y]) => {
-      line(P(X, Y, zn), P(X, Y, zf), 'rgba(160,170,255,0.35)', 2);
+      line(P(X, Y, zn), P(X, Y, zf), 'rgba(237,133,81,0.4)', 2);
     });
+
+    // A vaulted door gives the corridor the same destination as the home-screen dungeon.
+    const doorWidth = f * 0.19;
+    const doorHeight = f * 0.27;
+    const doorBottom = cy + f * 0.12;
+    const doorTop = doorBottom - doorHeight;
+    ctx.beginPath();
+    ctx.moveTo(cx - doorWidth / 2, doorBottom);
+    ctx.lineTo(cx - doorWidth / 2, doorTop + doorWidth / 2);
+    ctx.arc(cx, doorTop + doorWidth / 2, doorWidth / 2, Math.PI, 0);
+    ctx.lineTo(cx + doorWidth / 2, doorBottom);
+    ctx.closePath();
+    ctx.fillStyle = '#110911';
+    ctx.fill();
+    ctx.strokeStyle = '#a54b3e';
+    ctx.lineWidth = Math.max(2, f * 0.012);
+    ctx.stroke();
 
     // stone slab lines that slide toward you as you walk
     const shift = offset % S;
@@ -471,7 +505,7 @@
       if (z < zn) continue;
       const a = Math.pow(Math.max(0, 1 - z / zf), 0.9);
       const lw = Math.min(6, Math.max(1, 3 / z));
-      const col = `rgba(150,160,240,${a * 0.55})`;
+      const col = `rgba(244,161,94,${a * 0.45})`;
       line(P(-1, floorY, z), P(1, floorY, z), col, lw);
       line(P(-1, ceilY, z), P(1, ceilY, z), col, lw);
       line(P(-1, ceilY, z), P(-1, floorY, z), col, lw);
@@ -498,9 +532,36 @@
       g.addColorStop(1, 'rgba(240,150,60,0)');
       ctx.fillStyle = g;
       ctx.fillRect(x - r, y - r, 2 * r, 2 * r);
-      ctx.fillStyle = `rgba(255,220,140,${a})`;
+
+      // Wall bracket, wooden handle, and flame make the light source tangible.
+      const torch = Math.max(3, Math.min(34, f * 0.065 / z));
+      const inward = -side;
+      ctx.fillStyle = `rgba(39,20,22,${a})`;
+      ctx.fillRect(x - torch * 0.32, y - torch * 0.14, torch * 0.64, torch * 0.3);
+      ctx.strokeStyle = `rgba(25,13,16,${a})`;
+      ctx.lineWidth = Math.max(1, torch * 0.16);
       ctx.beginPath();
-      ctx.ellipse(x, y, r * 0.06, r * 0.12 * flick, 0, 0, Math.PI * 2);
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + inward * torch * 0.28, y + torch * 0.72);
+      ctx.stroke();
+      ctx.strokeStyle = `rgba(149,74,37,${a})`;
+      ctx.lineWidth = Math.max(1, torch * 0.08);
+      ctx.beginPath();
+      ctx.moveTo(x + inward * torch * 0.03, y + torch * 0.08);
+      ctx.lineTo(x + inward * torch * 0.27, y + torch * 0.68);
+      ctx.stroke();
+
+      ctx.fillStyle = `rgba(255,119,42,${a * flick})`;
+      ctx.beginPath();
+      ctx.moveTo(x, y - torch * 1.08 * flick);
+      ctx.quadraticCurveTo(x + torch * 0.44, y - torch * 0.36, x, y + torch * 0.12);
+      ctx.quadraticCurveTo(x - torch * 0.44, y - torch * 0.36, x, y - torch * 1.08 * flick);
+      ctx.fill();
+      ctx.fillStyle = `rgba(255,234,140,${a * flick})`;
+      ctx.beginPath();
+      ctx.moveTo(x, y - torch * 0.64 * flick);
+      ctx.quadraticCurveTo(x + torch * 0.2, y - torch * 0.26, x, y - torch * 0.02);
+      ctx.quadraticCurveTo(x - torch * 0.2, y - torch * 0.26, x, y - torch * 0.64 * flick);
       ctx.fill();
     }
 

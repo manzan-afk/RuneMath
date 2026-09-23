@@ -7,6 +7,7 @@
   --foe: #e0625b;
   --danger: #ff7a6b;
   --font: "Palatino Linotype", Palatino, "Book Antiqua", "URW Palladio L", Georgia, serif;
+  --display-font: "Uncial Antiqua", "Palatino Linotype", fantasy;
 }
 
 * { box-sizing: border-box; }
@@ -92,6 +93,7 @@ body {
   margin: 0;
   font-size: clamp(1.4rem, 3vw, 2rem);
   letter-spacing: 0.06em;
+  font-family: var(--display-font);
   color: var(--rune);
   text-shadow: 0 0 18px rgba(240, 185, 90, 0.45), 0 1px 4px #000;
 }
@@ -324,6 +326,35 @@ body {
 .panel p { line-height: 1.5; }
 .hint { color: var(--muted); font-size: 0.95rem; }
 
+#startOverlay {
+  background:
+    linear-gradient(90deg, rgba(8, 13, 25, 0.84), rgba(14, 24, 38, 0.36) 55%, rgba(8, 13, 25, 0.76)),
+    url("dungeons.jpg") center / cover;
+  place-items: center start;
+  padding: 8vh max(7vw, 32px);
+}
+#startOverlay .panel {
+  max-width: 540px;
+  padding: 0;
+  text-align: left;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  text-shadow: 0 2px 8px #000;
+}
+#startOverlay .panel h2 {
+  font-family: var(--display-font);
+  font-size: clamp(2.7rem, 7vw, 5rem);
+  line-height: 1.05;
+  letter-spacing: 0.04em;
+  text-shadow: 0 3px 16px rgba(0, 0, 0, 0.9);
+}
+#startOverlay .panel p { max-width: 36rem; font-size: 1.1rem; }
+#startOverlay .ops { justify-content: flex-start; }
+#startOverlay .rune-toggle span { background: rgba(20, 27, 54, 0.82); }
+#startOverlay .btn { box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35); }
+
 .ops { display: flex; gap: 10px; justify-content: center; margin: 18px 0 6px; }
 .rune-toggle { position: relative; }
 .rune-toggle input { position: absolute; opacity: 0; inset: 0; }
@@ -376,6 +407,11 @@ body {
   .overlay { padding: 12px; }
   .panel { padding: 20px; }
   .panel h2 { font-size: 1.65rem; }
+  #startOverlay { padding: 8vh 24px; place-items: start center; }
+  #startOverlay .panel { max-width: 390px; text-align: center; }
+  #startOverlay .panel h2 { font-size: 2.5rem; }
+  #startOverlay .panel p { font-size: 1rem; }
+  #startOverlay .ops { justify-content: center; }
   .ops { gap: 6px; margin: 14px 0 6px; }
   .rune-toggle span { width: 50px; height: 50px; font-size: 1.7rem; }
 }

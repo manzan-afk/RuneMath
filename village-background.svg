@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="Cartoon medieval village">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#5ba7d1"/>
+      <stop offset="1" stop-color="#d9c671"/>
+    </linearGradient>
+    <linearGradient id="road" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#ebca88"/>
+      <stop offset="1" stop-color="#b9784f"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#sky)"/>
+  <circle cx="1290" cy="150" r="62" fill="#ffe8a4"/>
+  <g fill="#f5f3df" opacity=".9">
+    <path d="M155 165c18-36 69-36 87 0 44-17 78 16 70 43H95c-8-27 16-48 60-43Z"/>
+    <path d="M940 110c17-31 62-31 79 0 39-15 69 13 63 39H885c-7-24 15-43 55-39Z"/>
+  </g>
+  <path d="M0 405 170 250l110 105 165-185 165 185 170-145 155 175 185-185 190 185 160-130 254 220v180H0Z" fill="#58799d"/>
+  <path d="M0 500q180-150 360-55t330-45q190-116 365 20t545-35v225H0Z" fill="#6f9b63"/>
+  <path d="M0 590q195-130 385-36t360-48q160-100 330 21t525-29v402H0Z" fill="#43805a"/>
+  <path d="M790 462c-97 55-124 106-103 171 26 77-58 153-208 267h694c-145-119-242-204-221-273 17-57-36-109-162-165Z" fill="url(#road)"/>
+  <g stroke="#243947" stroke-width="9" stroke-linejoin="round">
+    <path d="M124 505h193v182H124Z" fill="#e5b65d"/>
+    <path d="m93 508 128-115 130 115Z" fill="#a94c42"/>
+    <path d="M195 575h54v112h-54Z" fill="#704537"/>
+    <path d="M145 559h34v37h-34Zm122 0h31v37h-31Z" fill="#9ad0db"/>
+    <path d="M398 449h230v223H398Z" fill="#d77d4d"/>
+    <path d="m366 453 146-137 149 137Z" fill="#83424b"/>
+    <path d="M478 539h65v133h-65Z" fill="#684033"/>
+    <path d="M425 516h36v42h-36Zm128 0h38v42h-38Z" fill="#a9d7dc"/>
+    <path d="M1088 460h210v214h-210Z" fill="#edc565"/>
+    <path d="m1056 463 137-131 139 131Z" fill="#a4483c"/>
+    <path d="M1162 545h61v129h-61Z" fill="#6d4230"/>
+    <path d="M1118 523h34v41h-34Zm82 0h35v41h-35Z" fill="#a9d7dc"/>
+    <path d="M1347 521h159v160h-159Z" fill="#c98052"/>
+    <path d="m1320 524 105-107 110 107Z" fill="#764155"/>
+    <path d="M1394 590h51v91h-51Z" fill="#684033"/>
+  </g>
+  <g stroke="#243947" stroke-width="8" stroke-linecap="round">
+    <path d="M335 616v-143"/>
+    <path d="M335 496c-85-29-88 52-27 45-48 60 31 74 27 30 24 45 79 13 38-35 49-47-23-82-38-40Z" fill="#4d9861"/>
+    <path d="M1025 674V486"/>
+    <path d="M1025 512c-101-34-100 60-32 50-53 63 29 81 32 34 31 46 87 7 41-38 57-52-28-94-41-46Z" fill="#4d9861"/>
+    <path d="M151 710v-103"/>
+    <path d="M151 626c-62-23-66 42-20 34-34 45 20 55 20 22 18 33 57 8 27-26 38-35-17-61-27-30Z" fill="#4d9861"/>
+  </g>
+  <g fill="#ffdb79" stroke="#243947" stroke-width="7">
+    <path d="M765 584h46l18 24-18 24h-46l-18-24Z"/>
+    <path d="M875 695h38l15 20-15 20h-38l-15-20Z"/>
+    <path d="M716 763h28l11 16-11 16h-28l-11-16Z"/>
+  </g>
+  <path d="M0 830q170-55 337 4t321-4q154-52 322 2t310-4q174-55 310 2v70H0Z" fill="#2c624c"/>
+</svg>
