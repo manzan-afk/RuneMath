@@ -18,7 +18,7 @@
   const ctx = el.scene.getContext('2d');
 
   const FOES = [
-    { name: 'Goblin', icon: '👺' }, { name: 'Cave Bat', icon: '🦇' },
+    { name: 'Cave Bat', icon: '🦇' },
     { name: 'Dire Wolf', icon: '🐺' }, { name: 'Skeleton', icon: '💀' },
     { name: 'Wraith', icon: '👻' }, { name: 'Ogre', icon: '👹' },
     { name: 'Troll', icon: '🧌' }, { name: 'Stone Golem', icon: '🗿' },
@@ -28,15 +28,6 @@
     { name: 'Dragon', icon: '🐉' }, { name: 'Kraken', icon: '🦑' },
     { name: 'Hydra', icon: '🐍' }, { name: 'Demon Lord', icon: '👿' },
   ];
-  const GOBLIN_ART = '<svg viewBox="0 0 180 190" role="img" aria-label="Goblin" focusable="false">'
-    + '<path d="M48 56 8 20l17 61M132 56l40-36-17 61" fill="#6d9b45" stroke="#17251d" stroke-width="7" stroke-linejoin="round"/>'
-    + '<path d="M38 49Q90 16 142 49v72q-7 47-52 54-45-7-52-54Z" fill="#79aa4d" stroke="#17251d" stroke-width="7"/>'
-    + '<path d="M47 89q15-19 30 0M103 89q15-19 30 0" fill="#f4d16e" stroke="#17251d" stroke-width="7"/>'
-    + '<circle cx="62" cy="84" r="6" fill="#17251d"/><circle cx="118" cy="84" r="6" fill="#17251d"/>'
-    + '<path d="M77 122q13 10 26 0M68 143q22 15 44 0" fill="none" stroke="#17251d" stroke-width="7" stroke-linecap="round"/>'
-    + '<path d="M71 153v25M109 153v25" stroke="#17251d" stroke-width="9" stroke-linecap="round"/>'
-    + '</svg>';
-
   const HERO_MAX_HP = 100;
   const BEST_KEY = 'runeMath.best';
 
@@ -145,9 +136,9 @@
     state.boss = boss;
     state.monsterMax = Math.round((70 + 25 * (level - 1)) * (boss ? 1.8 : 1));
     state.monsterHp = state.monsterMax;
-    state.timeLimit = Math.max(boss ? 5 : 6, 12 - 0.4 * (level - 1) - (boss ? 1 : 0));
+    state.timeLimit = 6;
     el.foeName.textContent = boss ? `${m.name} (boss)` : m.name;
-    el.foeSprite.innerHTML = m.name === 'Goblin' ? GOBLIN_ART : m.icon;
+    el.foeSprite.textContent = m.icon;
     el.foeSprite.setAttribute('aria-label', m.name);
     el.foeSprite.classList.remove('fallen');
     state.monster = m;
