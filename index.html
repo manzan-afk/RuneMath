@@ -84,6 +84,20 @@
           <input id="answer" type="text" inputmode="numeric" aria-label="Your answer" placeholder="?">
           <button type="submit" class="btn">Strike</button>
         </form>
+        <div class="number-pad" id="numberPad" aria-label="Number keypad">
+          <button type="button" data-key="1">1</button>
+          <button type="button" data-key="2">2</button>
+          <button type="button" data-key="3">3</button>
+          <button type="button" data-key="4">4</button>
+          <button type="button" data-key="5">5</button>
+          <button type="button" data-key="6">6</button>
+          <button type="button" data-key="7">7</button>
+          <button type="button" data-key="8">8</button>
+          <button type="button" data-key="9">9</button>
+          <button type="button" data-action="delete" aria-label="Delete last digit">Del</button>
+          <button type="button" data-key="0">0</button>
+          <button type="button" class="number-pad-strike" data-action="submit">Strike</button>
+        </div>
         <p class="feedback" id="feedback" aria-live="polite" data-kind=""></p>
       </div>
     </section>

@@ -10,7 +10,7 @@
     shieldStatus: $('shieldStatus'),
     foeSprite: $('foeSprite'), foeHp: $('foeHp'), foeHpText: $('foeHpText'), foeName: $('foeName'),
     timerFill: $('timerFill'), question: $('question'), form: $('answerForm'),
-    answer: $('answer'), feedback: $('feedback'),
+    answer: $('answer'), numberPad: $('numberPad'), feedback: $('feedback'),
     backgroundMusic: $('backgroundMusic'), bossMusic: $('bossMusic'),
     volume: $('volume'),
     pauseBtn: $('pauseBtn'), homeBtn: $('homeBtn'), pauseOverlay: $('pauseOverlay'),
@@ -135,9 +135,13 @@
     active.play().catch(() => {});
   }
 
-  function pauseBattleMusic() {
+  function pauseBattleMusic(reset = false) {
     el.backgroundMusic.pause();
     el.bossMusic.pause();
+    if (reset) {
+      el.backgroundMusic.currentTime = 0;
+      el.bossMusic.currentTime = 0;
+    }
   }
 
   function setMusicVolume(value) {
@@ -306,9 +310,21 @@
     else resolveMiss(false);
   }
 
+  function onNumberPadClick(e) {
+    const button = e.target.closest('button');
+    if (!button || !state || !state.running || state.locked) return;
+    if (button.dataset.key) {
+      el.answer.value += button.dataset.key;
+    } else if (button.dataset.action === 'delete') {
+      el.answer.value = el.answer.value.slice(0, -1);
+    } else if (button.dataset.action === 'submit') {
+      el.form.requestSubmit();
+    }
+  }
+
   function gameOver() {
     state.running = false;
-    pauseBattleMusic();
+    pauseBattleMusic(true);
     el.pauseBtn.hidden = true;
     const isBest = state.score > best;
     if (isBest) { best = state.score; saveBest(best); }
@@ -619,6 +635,7 @@
   }
 
   el.form.addEventListener('submit', onSubmit);
+  el.numberPad.addEventListener('click', onNumberPadClick);
   el.startBtn.addEventListener('click', startGame);
   el.pauseBtn.addEventListener('click', pauseGame);
   el.homeBtn.addEventListener('click', goHome);

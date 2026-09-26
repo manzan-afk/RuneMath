@@ -259,6 +259,7 @@ body {
   border-radius: 10px;
 }
 #answer:focus-visible { outline: 3px solid var(--rune); outline-offset: 2px; }
+.number-pad { display: none; }
 
 .btn {
   padding: 8px 18px;
@@ -277,6 +278,31 @@ body {
 .btn.compact { padding: 6px 12px; font-size: 0.9rem; }
 .btn.secondary { color: var(--ink); background: #22254a; border: 1px solid var(--stone-edge); }
 .panel-actions { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+
+@media (max-width: 600px) and (pointer: coarse) {
+  #answerForm .btn { display: none; }
+  #answer { width: min(9ch, 100%); }
+  .number-pad {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    width: min(300px, 90%);
+    margin: 0 auto;
+  }
+  .number-pad button {
+    min-height: 42px;
+    padding: 6px;
+    font: inherit;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--ink);
+    background: #22254a;
+    border: 1px solid var(--stone-edge);
+    border-radius: 6px;
+  }
+  .number-pad .number-pad-strike { color: #2a1d05; background: var(--rune); }
+  .number-pad button:active { filter: brightness(1.15); }
+}
 
 .feedback { min-height: 2.6em; margin: 10px 0 0; font-size: 0.95rem; color: var(--muted); }
 .feedback[data-kind="good"] { color: var(--rune); }
